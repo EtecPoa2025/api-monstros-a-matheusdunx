@@ -24,11 +24,50 @@ app.get('/monstros', (req, res) => {
     // Retorna a array de monstros como uma resposta JSON
     res.json(monstros);
 });
-
+// 1. Importar o módulo Express
+// 1. Importar o módulo Expreapp.get('/monstros/random', (req, res) => {
+   if (monstros.length > 0) {
+const index = Math.floor(Math.random() * monstros.length);
+} else {
+res.status(404).json({ erro: 'nenhum monstro encontrado'});
+}
+    res.json(monstros[index]);
+});
+ 
 // --- Iniciar o Servidor ---
-
+ 
 // Faz o aplicativo Express começar a "escutar" por requisições na porta definida.
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
     console.log(`Acesse: http://localhost:${PORT}/monstros`);
+});
+ 
+app.get('/monstros', (req, res) => {
+    const tipoCriatura = req.query.tipo_criatura;
+    const pontosVidaMin = req.query.pontos_vida_min;
+    const pontosVidaMax = req.query.pontos_vida_max;
+    const buscaTexto = req.query.q;
+ 
+    let resultado = monstros;
+ 
+    if (tipoCriatura) {
+        resultado = resultado.filter(m => m.tipo_criatura === tipoCriatura);
+    }
+    if (pontosVidaMin) {
+        resultado = resultado.filter(m => m.pontos_vida >= Number(pontosVidaMin));
+    }
+    if (pontosVidaMax) {
+        resultado = resultado.filter(m => m.pontos_vida <= Number(pontosVidaMax));
+    }
+    if (buscaTexto) {
+        const texto = buscaTexto.toLowerCase ();
+        resultado = resultado.filter(m =>
+        (m.nome && m.nome.toLowerCase() .includes(texto))  ||
+        (m.descricao && m.descricao.toLowerCase() .includes(texto))
+        );
+ 
+    }
+ 
+    res.json(resultado);
+ 
 });
